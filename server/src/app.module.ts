@@ -8,7 +8,6 @@ import { UsersModule } from './models/users/users.module';
 
 @Module({
   imports: [
-    AuthModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -20,7 +19,8 @@ import { UsersModule } from './models/users/users.module';
       entities: ['./**/*.entity.js'],
       synchronize: true,
     }),
-    UsersModule
+    UsersModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

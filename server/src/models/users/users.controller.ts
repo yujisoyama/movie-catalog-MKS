@@ -1,6 +1,5 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
@@ -18,7 +17,7 @@ export class UsersController {
                 return res.json({ message: result });
             }
 
-            const responseError = { 
+            const responseError = {
                 message: result.message,
                 property: result.property,
                 statusCode: HttpStatus.BAD_REQUEST
@@ -29,4 +28,5 @@ export class UsersController {
             throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
 }
