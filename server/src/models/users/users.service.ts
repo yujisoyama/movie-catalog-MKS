@@ -49,4 +49,8 @@ export class UsersService {
         await this.userRepository.save(newUser);
         return "O usuário foi criado com sucesso!";
     }
+
+    async getUserByEmail(email: string): Promise<User> {
+        return await this.userRepository.findOneBy({ email });
+    }
 }
