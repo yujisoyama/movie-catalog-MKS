@@ -5,7 +5,7 @@ export interface IAddMovie {
     sinopsis: string;
 }
 
-export interface IBadRequestError {
+export interface IMovieBadRequestError {
     message: string;
     property: string;
 }

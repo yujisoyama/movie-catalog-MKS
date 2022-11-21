@@ -1,3 +1,5 @@
+import { StatusModule } from './models/status/status.module';
+import { UsersMoviesModule } from './models/users-movies/users-movies.module';
 import { MoviesModule } from './models/movies/movies.module';
 import { MoviesController } from './models/movies/movies.controller';
 import { AuthModule } from './models/auth/auth.module';
@@ -10,6 +12,8 @@ import { UsersModule } from './models/users/users.module';
 
 @Module({
   imports: [
+    StatusModule,
+    UsersMoviesModule,
     MoviesModule,
     UsersModule,
     AuthModule,

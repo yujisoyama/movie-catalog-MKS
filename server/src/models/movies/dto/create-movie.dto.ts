@@ -4,7 +4,3 @@ export class CreateMovieDto {
     year: string;
     sinopsis: string;
 }
-
-export class UpdateMovieDto extends CreateMovieDto {
-    id: number;
-}

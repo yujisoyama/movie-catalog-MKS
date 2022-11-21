@@ -2,7 +2,8 @@ import { Body, Controller, Delete, HttpCode, HttpException, HttpStatus, Param, P
 import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateMovieDto, UpdateMovieDto } from './dto/create-movie.dto';
+import { CreateMovieDto } from './dto/create-movie.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MoviesService } from './movies.service';
 
 @Controller('movies')

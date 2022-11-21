@@ -7,7 +7,7 @@ export class Status {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     description: string;
 
     @OneToMany(() => UserMovie, userMovies => userMovies.status)

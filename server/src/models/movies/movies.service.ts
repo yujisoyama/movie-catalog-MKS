@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { Repository } from 'typeorm';
-import { IAddMovie, IBadRequestError, IUpdateMovie } from './interfaces/movie.interface';
+import { IAddMovie, IMovieBadRequestError, IUpdateMovie } from './interfaces/movie.interface';
 import { Movie } from './movie.entity';
 
 @Injectable()
 export class MoviesService {
     constructor(@InjectRepository(Movie) private movieRepository: Repository<Movie>) { }
 
-    async addMovie(createMovie: IAddMovie): Promise<string | IBadRequestError> {
+    async addMovie(createMovie: IAddMovie): Promise<string | IMovieBadRequestError> {
         if (verifyStringIsEmpty(createMovie.name)) {
             return {
                 message: "O seu nome não pode ser nulo.",
@@ -57,7 +57,7 @@ export class MoviesService {
         return "O filme foi adicionado com sucesso!";
     }
 
-    async updateMovie(updateMovie: Partial<IUpdateMovie>): Promise<string | IBadRequestError> {
+    async updateMovie(updateMovie: Partial<IUpdateMovie>): Promise<string | IMovieBadRequestError> {
         if (updateMovie.id === undefined) {
             return {
                 message: "Informe o ID do filme que deseja atualizar.",
@@ -106,7 +106,7 @@ export class MoviesService {
         return "As informações do filme foram atualizadas!";
     }
 
-    async removeMovie(movieId: number): Promise<string | IBadRequestError> {
+    async removeMovie(movieId: number): Promise<string | IMovieBadRequestError> {
         const movie = await this.movieRepository.findOneBy({ id: movieId });
 
         if (!movie) {
