@@ -1,23 +1,24 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserMovie } from "../users-movies/user-movie.entity";
 
-@Entity('users')
-export class User {
+
+@Entity('movies')
+export class Movie {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     name: string;
 
-    @Column({ unique: true })
-    email: string;
+    @Column()
+    genre: string;
 
     @Column()
-    password: string;
+    year: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @Column()
+    sinopsis: string;
 
-    @OneToMany(() => UserMovie, userMovie => userMovie.user)
+    @OneToMany(() => UserMovie, userMovies => userMovies.movie)
     userMovies: UserMovie[];
 }

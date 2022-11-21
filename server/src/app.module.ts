@@ -1,3 +1,5 @@
+import { MoviesModule } from './models/movies/movies.module';
+import { MoviesController } from './models/movies/movies.controller';
 import { AuthModule } from './models/auth/auth.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -8,6 +10,9 @@ import { UsersModule } from './models/users/users.module';
 
 @Module({
   imports: [
+    MoviesModule,
+    UsersModule,
+    AuthModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -19,8 +24,6 @@ import { UsersModule } from './models/users/users.module';
       entities: ['./**/*.entity.js'],
       synchronize: true,
     }),
-    UsersModule,
-    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,23 +5,26 @@ import { Repository } from 'typeorm';
 import { ICreateUser, ICreateUserError } from './interfaces/user.interfaces';
 
 import * as bcrypt from 'bcrypt';
+import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
+import { verifyInvalidEmail } from 'src/utils/verifyInvalidEmail';
+import { verifyPasswordLength } from 'src/utils/verifyPasswordLength';
 
 @Injectable()
 export class UsersService {
     constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
 
     async createUser(createUser: ICreateUser): Promise<string | ICreateUserError> {
-        if (createUser.name === undefined || createUser.name === "") {
+        if (verifyStringIsEmpty(createUser.name)) {
             return {
                 message: "O seu nome não pode ser nulo.",
-                property: 'name'
+                property: "name"
             }
         }
 
-        if (createUser.email.indexOf("@") === -1) {
+        if (verifyInvalidEmail(createUser.email)) {
             return {
                 message: "Email inválido. Está faltando o @.",
-                property: 'email'
+                property: "email"
             }
         }
 
@@ -32,11 +35,11 @@ export class UsersService {
         if (emailAlreadyUsing) {
             return {
                 message: "Este email já está sendo usado.",
-                property: 'email'
+                property: "email"
             }
         }
 
-        if (createUser.password.length < 6) {
+        if (verifyPasswordLength(createUser.password, 6)) {
             return {
                 message: "A senha deve conter pelo menos 6 caracteres",
                 property: "password"
