@@ -8,8 +8,10 @@ services:
       - '3000:3000'
     links:
       - db
+      - redis
     depends_on:
       - db
+      - redis
   db:
     container_name: postgresMKS
     image: postgres:14.1-alpine
@@ -22,7 +24,15 @@ services:
       - '5440:5432'
     volumes: 
       - db:/var/lib/postgresql/data
-
+  redis:
+    container_name: redisMKS
+    image: redis
+    command: redis-server --requirepass 1234 --appendonly yes
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - /home/duducp/Redis:/var/lib/postgresql/data
 volumes:
   db:
     driver: local
