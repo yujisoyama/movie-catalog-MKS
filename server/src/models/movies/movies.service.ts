@@ -119,4 +119,8 @@ export class MoviesService {
         await this.movieRepository.delete({ id: movieId });
         return "O filme foi removido com sucesso.";
     }
+
+    async getMovieById(movie: Partial<Movie>): Promise<Movie> {
+        return await this.movieRepository.findOneBy({ id: movie.id });
+    }
 }

@@ -56,4 +56,8 @@ export class UsersService {
     async getUserByEmail(email: string): Promise<User> {
         return await this.userRepository.findOneBy({ email });
     }
+
+    async getUserById(user: Partial<User>): Promise<User> {
+        return await this.userRepository.findOneBy({ id: user.id });
+    }
 }

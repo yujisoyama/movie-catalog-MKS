@@ -8,15 +8,15 @@ export class UserMovie {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, user => user.userMovies)
+    @ManyToOne(() => User, user => user.userMovies, { nullable: false, eager: true })
     @JoinColumn({ name: 'userId' })
     user: User;
 
-    @ManyToOne(() => Movie, movie => movie.userMovies)
+    @ManyToOne(() => Movie, movie => movie.userMovies, { nullable: false, eager: true })
     @JoinColumn({ name: 'movieId' })
-    movie: string;
+    movie: Movie;
 
-    @ManyToOne(() => Status, status => status.userMovies)
+    @ManyToOne(() => Status, status => status.userMovies, { nullable: false, eager: true })
     @JoinColumn({ name: 'statusId' })
     status: Status;
 

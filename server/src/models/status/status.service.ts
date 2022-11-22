@@ -8,6 +8,7 @@ import { Status } from './status.entity';
 @Injectable()
 export class StatusService {
     constructor(@InjectRepository(Status) private statusRepository: Repository<Status>) { }
+
     async createStatus(createStatus: ICreateStatus) {
         if (verifyStringIsEmpty(createStatus.description)) {
             return {
@@ -31,6 +32,15 @@ export class StatusService {
         await this.statusRepository.save(newStatus);
         return "Status adicionado com sucesso!"
     }
+
+    async getAllStatus(): Promise<Status[]> {
+        return await this.statusRepository.find();
+    }
+
+    async getStatusById(status: Partial<Status>): Promise<Status> {
+        return await this.statusRepository.findOneBy({ id: status.id });
+    }
+
 }
 
 
