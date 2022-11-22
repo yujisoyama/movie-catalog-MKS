@@ -3,7 +3,6 @@ import { Status } from "src/models/status/status.entity";
 import { User } from "src/models/users/user.entity";
 
 export interface ICreateUserMovie {
-    userId: User;
     movieId: Movie;
     statusId: Status;
     grade: string;
@@ -16,7 +15,6 @@ export interface IUserMovieBadRequestError {
 }
 
 export interface IFilterUserMovie {
-    userId: User;
     statusId: Status;
     comment: string;
     grade: string;

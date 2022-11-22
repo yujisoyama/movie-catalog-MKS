@@ -22,11 +22,7 @@ export class UsersMoviesService {
         private statusService: StatusService,
     ) { }
 
-    async createUserMovie(createUserMovie: ICreateUserMovie) {
-
-        if (verifyNumberIsUndefinedOrNaN(Number(createUserMovie.userId))) {
-            return { message: "Informe o Id do usuário.", property: "userId" }
-        }
+    async createUserMovie(createUserMovie: ICreateUserMovie, reqUser: Partial<User>) {
 
         if (verifyNumberIsUndefinedOrNaN(Number(createUserMovie.movieId))) {
             return { message: "Informe o Id do filme.", property: "movieId" }
@@ -43,12 +39,6 @@ export class UsersMoviesService {
             createUserMovie.grade = Number(createUserMovie.grade).toFixed();
         }
 
-        const reqUser: Partial<User> = { id: Number(createUserMovie.userId) }
-        const user = await this.userService.getUserById(reqUser);
-        if (!user) {
-            return { message: "O usuário não foi encontrado.", property: "userId" }
-        }
-
         const reqMovie: Partial<Movie> = { id: Number(createUserMovie.movieId) }
         const movie = await this.movieService.getMovieById(reqMovie);
         if (!movie) {
@@ -57,12 +47,12 @@ export class UsersMoviesService {
 
         const userMovie = await this.userMovieRepository.findOne({
             where: {
-                user: { id: user.id },
+                user: { id: reqUser.id },
                 movie: { id: movie.id }
             }
         });
         if (userMovie) {
-            return { message: `Já existe uma relação do usuário '${user.name}' com o filme '${movie.name}'. Caso queira editar as informações dessa relação, atualize ela em vez de cria outra.`, property: "userId,movieId" }
+            return { message: `Já existe uma relação do usuário '${reqUser.name}' com o filme '${movie.name}'. Caso queira editar as informações dessa relação, atualize ela em vez de cria outra.`, property: "movieId" }
         }
 
         const reqStatus: Partial<Status> = { id: Number(createUserMovie.statusId) }
@@ -72,18 +62,17 @@ export class UsersMoviesService {
         }
 
         const newUserMovie = this.userMovieRepository.create({
-            user: createUserMovie.userId,
+            user: reqUser,
             movie: createUserMovie.movieId,
             status: createUserMovie.statusId,
             grade: createUserMovie.grade,
             comment: createUserMovie.comment
         });
         await this.userMovieRepository.save(newUserMovie);
-        return `A relação do usuário '${user.name}' com o filme '${movie.name}' foi adicionada. Status: '${status.description}'; Nota: '${newUserMovie.grade}'; Comentário: '${newUserMovie.comment}'`;
-
+        return `A relação do usuário '${reqUser.name}' com o filme '${movie.name}' foi adicionada. Status: '${status.description}'; Nota: '${newUserMovie.grade}'; Comentário: '${newUserMovie.comment}'`;
     }
 
-    async filterUserMovie(filterUserMovie: IFilterUserMovie) {
+    async filterUserMovie(filterUserMovie: IFilterUserMovie, reqUser: Partial<User>) {
         if (verifyStringIsEmpty(filterUserMovie.comment)) {
             filterUserMovie.comment = "";
         }
@@ -96,7 +85,7 @@ export class UsersMoviesService {
             return await this.userMovieRepository.createQueryBuilder("usermovie")
                 .innerJoin(Movie, "movie", "movie.id = usermovie.movieId")
                 .innerJoin(Status, "status", "status.id = usermovie.statusId")
-                .where("usermovie.userId = :userId", { userId: filterUserMovie.userId })
+                .where("usermovie.userId = :userId", { userId: reqUser.id })
                 .andWhere("LOWER(usermovie.comment) like LOWER(:comment)", { comment: `%${filterUserMovie.comment}%` })
                 .andWhere("usermovie.grade like :grade", { grade: `%${filterUserMovie.grade}%` })
                 .select(["usermovie.id", "usermovie.comment", "usermovie.grade", "usermovie.userId", "status.id", "status.description", "movie.id", "movie.name"])
@@ -107,7 +96,7 @@ export class UsersMoviesService {
         return await this.userMovieRepository.createQueryBuilder("usermovie")
             .innerJoin(Movie, "movie", "movie.id = usermovie.movieId")
             .innerJoin(Status, "status", "status.id = usermovie.statusId")
-            .where("usermovie.userId = :userId", { userId: filterUserMovie.userId })
+            .where("usermovie.userId = :userId", { userId: reqUser.id })
             .andWhere("LOWER(usermovie.comment) like LOWER(:comment)", { comment: `%${filterUserMovie.comment}%` })
             .andWhere("usermovie.grade like :grade", { grade: `%${filterUserMovie.grade}%` })
             .andWhere("usermovie.statusId = :statusId", { statusId: filterUserMovie.statusId })

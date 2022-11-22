@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, HttpCode, HttpException, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpException, HttpStatus, Param, Post, Res, UseGuards, Request } from '@nestjs/common';
 import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateUserMovieDto, GetFilterUserMovieDto } from './dto/create-user-movie.dto';
+import { CreateUserMovieDto } from './dto/create-user-movie.dto';
+import { GetFilterUserMovieDto } from './dto/get-filter-user-movie.dto';
 import { UsersMoviesService } from './users-movies.service';
 
 @Controller('users/movies')
@@ -12,9 +13,9 @@ export class UsersMoviesController {
     @UseGuards(JwtAuthGuard)
     @Post()
     @HttpCode(201)
-    async addUserMovie(@Body() createUserMovieDto: CreateUserMovieDto, @Res() res: Response) {
+    async addUserMovie(@Body() createUserMovieDto: CreateUserMovieDto, @Request() req, @Res() res: Response) {
         try {
-            const result = await this.usersMoviesService.createUserMovie(createUserMovieDto);
+            const result = await this.usersMoviesService.createUserMovie(createUserMovieDto, req.user);
             responseForRequests(result, res);
         } catch (error) {
             console.log(error);
@@ -38,9 +39,9 @@ export class UsersMoviesController {
     @UseGuards(JwtAuthGuard)
     @Post('/filter')
     @HttpCode(200)
-    async getFilterUserMovies(@Body() getFilterUserMovies: GetFilterUserMovieDto) {
+    async getFilterUserMovies(@Body() getFilterUserMovies: GetFilterUserMovieDto, @Request() req) {
         try {
-            return await this.usersMoviesService.filterUserMovie(getFilterUserMovies);
+            return await this.usersMoviesService.filterUserMovie(getFilterUserMovies, req.user);
         } catch (error) {
             console.log(error);
             throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
