@@ -6,11 +6,19 @@ export interface ICreateUserMovie {
     userId: User;
     movieId: Movie;
     statusId: Status;
-    grade: number;
+    grade: string;
     comment: string;
 }
 
 export interface IUserMovieBadRequestError {
     message: string;
     property: string;
+}
+
+export interface IFilterUserMovie {
+    userId: User;
+    statusId: Status;
+    comment: string;
+    grade: string;
+    
 }

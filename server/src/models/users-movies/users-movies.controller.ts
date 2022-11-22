@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, HttpException, HttpStatus, Post, Res, UseGu
 import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateUserMovieDto } from './dto/create-user-movie.dto';
+import { CreateUserMovieDto, GetFilterUserMovieDto } from './dto/create-user-movie.dto';
 import { UsersMoviesService } from './users-movies.service';
 
 @Controller('users/movies')
@@ -16,6 +16,18 @@ export class UsersMoviesController {
         try {
             const result = await this.usersMoviesService.createUserMovie(createUserMovieDto);
             responseForRequests(result, res);
+        } catch (error) {
+            console.log(error);
+            throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/filter')
+    @HttpCode(200)
+    async getFilterUserMovies(@Body() getFilterUserMovies: GetFilterUserMovieDto) {
+        try {
+            return this.usersMoviesService.filterUserMovie(getFilterUserMovies);
         } catch (error) {
             console.log(error);
             throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);

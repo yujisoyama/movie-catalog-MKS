@@ -20,8 +20,8 @@ export class UserMovie {
     @JoinColumn({ name: 'statusId' })
     status: Status;
 
-    @Column({ type: 'float', nullable: true })
-    grade: number;
+    @Column({ nullable: true })
+    grade: string;
 
     @Column()
     comment: string;

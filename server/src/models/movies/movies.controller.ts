@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateMovieDto } from './dto/create-movie.dto';
+import { FilterMoviesDto } from './dto/filter-movies.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MoviesService } from './movies.service';
 
@@ -36,16 +37,30 @@ export class MoviesController {
         }
     }
 
+    // @UseGuards(JwtAuthGuard)
+    // @Delete('/remove/:id')
+    // @HttpCode(200)
+    // async deleteMovie(@Param('id') id, @Res() res: Response) {
+    //     try {
+    //         const result = await this.movieService.removeMovie(id);
+    //         responseForRequests(result, res);
+    //     } catch (error) {
+    //         console.log(error);
+    //         throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
     @UseGuards(JwtAuthGuard)
-    @Delete('/remove/:id')
-    @HttpCode(200)
-    async deleteMovie(@Param('id') id, @Res() res: Response) {
+    @Post('/filter')
+    @HttpCode(200) 
+    async getFilterMovies(@Body() filterMovie: FilterMoviesDto) {
         try {
-            const result = await this.movieService.removeMovie(id);
-            responseForRequests(result, res);
+            return this.movieService.getMoviesByFilter(filterMovie);
         } catch (error) {
             console.log(error);
             throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+
 }

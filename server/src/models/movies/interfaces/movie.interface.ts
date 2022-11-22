@@ -14,4 +14,6 @@ export interface IUpdateMovie extends IAddMovie {
     id: number;
 }
 
+export interface IFilterMovies extends IAddMovie { }
+
 

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { Repository } from 'typeorm';
-import { IAddMovie, IMovieBadRequestError, IUpdateMovie } from './interfaces/movie.interface';
+import { IAddMovie, IFilterMovies, IMovieBadRequestError, IUpdateMovie } from './interfaces/movie.interface';
 import { Movie } from './movie.entity';
 
 @Injectable()
@@ -106,21 +106,42 @@ export class MoviesService {
         return "As informações do filme foram atualizadas!";
     }
 
-    async removeMovie(movieId: number): Promise<string | IMovieBadRequestError> {
-        const movie = await this.movieRepository.findOneBy({ id: movieId });
+    // async removeMovie(movieId: number): Promise<string | IMovieBadRequestError> {
+    //     const movie = await this.movieRepository.findOneBy({ id: movieId });
 
-        if (!movie) {
-            return {
-                message: "O filme não foi encontrado.",
-                property: "id"
-            }
-        }
+    //     if (!movie) {
+    //         return {
+    //             message: "O filme não foi encontrado.",
+    //             property: "id"
+    //         }
+    //     }
 
-        await this.movieRepository.delete({ id: movieId });
-        return "O filme foi removido com sucesso.";
-    }
+    //     await this.movieRepository.delete({ id: movieId });
+    //     return "O filme foi removido com sucesso.";
+    // }
 
     async getMovieById(movie: Partial<Movie>): Promise<Movie> {
         return await this.movieRepository.findOneBy({ id: movie.id });
+    }
+
+    async getMoviesByFilter(filterMovie: Partial<IFilterMovies>): Promise<Movie[]> {
+        if (verifyStringIsEmpty(filterMovie.name)) {
+            filterMovie.name = "";
+        }
+
+        if (verifyStringIsEmpty(filterMovie.genre)) {
+            filterMovie.genre = "";
+        }
+
+        if (verifyStringIsEmpty(filterMovie.year)) {
+            filterMovie.year = "";
+        }
+
+        return await this.movieRepository.createQueryBuilder("movie")
+            .where("LOWER(movie.name) like LOWER(:name)", { name: `%${filterMovie.name}%` })
+            .andWhere("LOWER(movie.genre) like LOWER(:genre)", { genre: `%${filterMovie.genre}%` })
+            .andWhere("LOWER(movie.year) like LOWER(:year)", { year: `%${filterMovie.year}%` })
+            .orderBy("movie.name", "ASC")
+            .execute()
     }
 }

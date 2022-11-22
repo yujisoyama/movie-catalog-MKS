@@ -6,6 +6,13 @@ export class CreateUserMovieDto {
     userId: User;
     movieId: Movie;
     statusId: Status;
-    grade: number;
+    grade: string;
+    comment: string;
+}
+
+export class GetFilterUserMovieDto {
+    userId: User;
+    statusId: Status;
+    grade: string;
     comment: string;
 }

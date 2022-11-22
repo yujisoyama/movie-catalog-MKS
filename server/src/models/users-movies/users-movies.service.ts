@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { filter } from 'rxjs';
 import { verifyNumberIsUndefinedOrNaN } from 'src/utils/verifyNumberIsUndefinedOrNaN';
+import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { Repository } from 'typeorm';
 import { Movie } from '../movies/movie.entity';
 import { MoviesService } from '../movies/movies.service';
@@ -8,7 +10,7 @@ import { Status } from '../status/status.entity';
 import { StatusService } from '../status/status.service';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
-import { ICreateUserMovie, IUserMovieBadRequestError } from './interfaces/user-movie';
+import { ICreateUserMovie, IFilterUserMovie, IUserMovieBadRequestError } from './interfaces/user-movie';
 import { UserMovie } from './user-movie.entity';
 
 @Injectable()
@@ -34,8 +36,11 @@ export class UsersMoviesService {
             return { message: "Informe o Id do status.", property: "statusId" }
         }
 
-        if (createUserMovie.grade < 0 || createUserMovie.grade > 10) {
-            return { message: "Informe uma nota válida (entre 0 ~ 10)", property: "grade" }
+        if (!verifyStringIsEmpty(createUserMovie.grade)) {
+            if (Number(createUserMovie.grade) < 0 || Number(createUserMovie.grade) > 10) {
+                return { message: "Informe uma nota válida (de 0 a 10)", property: "grade" }
+            }
+            createUserMovie.grade = Number(createUserMovie.grade).toFixed();
         }
 
         const reqUser: Partial<User> = { id: Number(createUserMovie.userId) }
@@ -70,11 +75,44 @@ export class UsersMoviesService {
             user: createUserMovie.userId,
             movie: createUserMovie.movieId,
             status: createUserMovie.statusId,
-            grade: Number(createUserMovie.grade.toFixed(2)),
+            grade: createUserMovie.grade,
             comment: createUserMovie.comment
         });
         await this.userMovieRepository.save(newUserMovie);
         return `A relação do usuário '${user.name}' com o filme '${movie.name}' foi adicionada. Status: '${status.description}'; Nota: '${newUserMovie.grade}'; Comentário: '${newUserMovie.comment}'`;
 
+    }
+
+    async filterUserMovie(filterUserMovie: IFilterUserMovie) {
+        if (verifyStringIsEmpty(filterUserMovie.comment)) {
+            filterUserMovie.comment = "";
+        }
+
+        if (verifyStringIsEmpty(filterUserMovie.grade)) {
+            filterUserMovie.grade = "";
+        }
+
+        if (verifyNumberIsUndefinedOrNaN(Number(filterUserMovie.statusId))) {
+            return await this.userMovieRepository.createQueryBuilder("usermovie")
+                .innerJoin(Movie, "movie", "movie.id = usermovie.movieId")
+                .innerJoin(Status, "status", "status.id = usermovie.statusId")
+                .where("usermovie.userId = :userId", { userId: filterUserMovie.userId })
+                .andWhere("LOWER(usermovie.comment) like LOWER(:comment)", { comment: `%${filterUserMovie.comment}%` })
+                .andWhere("usermovie.grade like :grade", { grade: `%${filterUserMovie.grade}%` })
+                .select(["usermovie.id", "usermovie.comment", "usermovie.grade", "usermovie.userId", "status.id", "status.description", "movie.id", "movie.name"])
+                .orderBy("movie.name", "ASC")
+                .execute();
+        }
+
+        return await this.userMovieRepository.createQueryBuilder("usermovie")
+                .innerJoin(Movie, "movie", "movie.id = usermovie.movieId")
+                .innerJoin(Status, "status", "status.id = usermovie.statusId")
+                .where("usermovie.userId = :userId", { userId: filterUserMovie.userId })
+                .andWhere("LOWER(usermovie.comment) like LOWER(:comment)", { comment: `%${filterUserMovie.comment}%` })
+                .andWhere("usermovie.grade like :grade", { grade: `%${filterUserMovie.grade}%` })
+                .andWhere("usermovie.statusId = :statusId", { statusId: filterUserMovie.statusId })
+                .select(["usermovie.id", "usermovie.comment", "usermovie.grade", "usermovie.userId", "status.id", "status.description", "movie.id", "movie.name"])
+                .orderBy("movie.name", "ASC")
+                .execute();
     }
 }
