@@ -89,7 +89,7 @@ export class MoviesService {
         }
 
         const date = new Date;
-        const currentYear = date.getFullYear();
+        const currentYear = date.getFullYear() + 5;
 
         if (Number(updateMovie.year) < 1895 || Number(updateMovie.year) > currentYear) {
             return {
