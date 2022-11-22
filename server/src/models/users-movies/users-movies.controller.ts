@@ -4,6 +4,7 @@ import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUserMovieDto } from './dto/create-user-movie.dto';
 import { GetFilterUserMovieDto } from './dto/get-filter-user-movie.dto';
+import { UpdateUserMovieDto } from './dto/update-user-movie.dto';
 import { UsersMoviesService } from './users-movies.service';
 
 @Controller('users/movies')
@@ -22,6 +23,20 @@ export class UsersMoviesController {
             throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/update')
+    @HttpCode(201)
+    async updateUserMovie(@Body() updateUserMovie: UpdateUserMovieDto, @Res() res: Response) {
+        try {
+            const result = await this.usersMoviesService.updateUserMovie(updateUserMovie);
+            responseForRequests(result, res);
+        } catch (error) {
+            console.log(error);
+            throw new HttpException("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @UseGuards(JwtAuthGuard)
     @Delete('/remove/:id')

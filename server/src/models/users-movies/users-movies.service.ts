@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { filter } from 'rxjs';
 import { verifyNumberIsUndefinedOrNaN } from 'src/utils/verifyNumberIsUndefinedOrNaN';
 import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { Repository } from 'typeorm';
@@ -10,7 +9,7 @@ import { Status } from '../status/status.entity';
 import { StatusService } from '../status/status.service';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
-import { ICreateUserMovie, IFilterUserMovie, IUserMovieBadRequestError } from './interfaces/user-movie';
+import { ICreateUserMovie, IFilterUserMovie, IUpdateUserMovie, IUserMovieBadRequestError } from './interfaces/user-movie';
 import { UserMovie } from './user-movie.entity';
 
 @Injectable()
@@ -70,6 +69,49 @@ export class UsersMoviesService {
         });
         await this.userMovieRepository.save(newUserMovie);
         return `A relação do usuário '${reqUser.name}' com o filme '${movie.name}' foi adicionada. Status: '${status.description}'; Nota: '${newUserMovie.grade}'; Comentário: '${newUserMovie.comment}'`;
+    }
+
+    async updateUserMovie(updateUserMovie: IUpdateUserMovie) {
+        if (updateUserMovie.userMovieId === undefined) {
+            return {
+                message: "Informe o ID da relação que deseja editar.",
+                property: "userMovieId"
+            }
+        }
+
+        const userMovie = await this.userMovieRepository.findOneBy({ id: updateUserMovie.userMovieId });
+        if (!userMovie) {
+            return {
+                message: "A relação não foi encontrada",
+                property: "userMovieId"
+            }
+        }
+
+
+        const updatedUserMovie = this.userMovieRepository.create(userMovie);
+        if (!verifyStringIsEmpty(updateUserMovie.comment)) {
+            updatedUserMovie.comment = updateUserMovie.comment;
+        }
+
+        if (!verifyStringIsEmpty(updateUserMovie.grade)) {
+            if (Number(updateUserMovie.grade) < 0 || Number(updateUserMovie.grade) > 10) {
+                return { message: "Informe uma nota válida (de 0 a 10)", property: "grade" }
+            }
+            updatedUserMovie.grade = Number(updateUserMovie.grade).toFixed();
+        }
+
+        if (!verifyNumberIsUndefinedOrNaN(updateUserMovie.statusId)) {
+            const reqStatus: Partial<Status> = { id: Number(updateUserMovie.statusId) }
+            const status = await this.statusService.getStatusById(reqStatus);
+            if (!status) {
+                return { message: "O status não foi encontrado.", property: "statusId" }
+            }
+            updatedUserMovie.status.id = status.id;
+            updatedUserMovie.status.description = status.description;
+        }
+
+        await this.userMovieRepository.save(updatedUserMovie);
+        return `Sua relação com o filme foi atualizada. Status: '${updatedUserMovie.status.description}'; Nota: '${updatedUserMovie.grade}'; Comentário: '${updatedUserMovie.comment}'`;
     }
 
     async filterUserMovie(filterUserMovie: IFilterUserMovie, reqUser: Partial<User>) {
