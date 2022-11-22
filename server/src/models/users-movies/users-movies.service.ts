@@ -105,14 +105,28 @@ export class UsersMoviesService {
         }
 
         return await this.userMovieRepository.createQueryBuilder("usermovie")
-                .innerJoin(Movie, "movie", "movie.id = usermovie.movieId")
-                .innerJoin(Status, "status", "status.id = usermovie.statusId")
-                .where("usermovie.userId = :userId", { userId: filterUserMovie.userId })
-                .andWhere("LOWER(usermovie.comment) like LOWER(:comment)", { comment: `%${filterUserMovie.comment}%` })
-                .andWhere("usermovie.grade like :grade", { grade: `%${filterUserMovie.grade}%` })
-                .andWhere("usermovie.statusId = :statusId", { statusId: filterUserMovie.statusId })
-                .select(["usermovie.id", "usermovie.comment", "usermovie.grade", "usermovie.userId", "status.id", "status.description", "movie.id", "movie.name"])
-                .orderBy("movie.name", "ASC")
-                .execute();
+            .innerJoin(Movie, "movie", "movie.id = usermovie.movieId")
+            .innerJoin(Status, "status", "status.id = usermovie.statusId")
+            .where("usermovie.userId = :userId", { userId: filterUserMovie.userId })
+            .andWhere("LOWER(usermovie.comment) like LOWER(:comment)", { comment: `%${filterUserMovie.comment}%` })
+            .andWhere("usermovie.grade like :grade", { grade: `%${filterUserMovie.grade}%` })
+            .andWhere("usermovie.statusId = :statusId", { statusId: filterUserMovie.statusId })
+            .select(["usermovie.id", "usermovie.comment", "usermovie.grade", "usermovie.userId", "status.id", "status.description", "movie.id", "movie.name"])
+            .orderBy("movie.name", "ASC")
+            .execute();
+    }
+
+    async removeUserMovie(userMovieId: number): Promise<string | IUserMovieBadRequestError> {
+        const userMovie = await this.userMovieRepository.findOneBy({ id: userMovieId });
+
+        if (!userMovie) {
+            return {
+                message: "A relação usuário-filme não foi encontrada.",
+                property: "id"
+            }
+        }
+
+        await this.userMovieRepository.delete({ id: userMovieId });
+        return `A relação do usuário '${userMovie.user.name}' e o filme '${userMovie.movie.name}' foi removida.`;
     }
 }
