@@ -9,7 +9,10 @@ export const dataSourceOptions: DataSourceOptions = {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     entities: ['../**/*.entity.{ts,js}'],
-    migrations: ['./src/db/migrations/*.ts']
+    migrations: ['./src/db/migrations/*.ts'],
+    ssl: {
+        rejectUnauthorized: false
+    }
 };
 
 const dataSource = new DataSource(dataSourceOptions);

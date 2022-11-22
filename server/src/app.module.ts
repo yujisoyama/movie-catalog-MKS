@@ -27,6 +27,9 @@ import { UsersModule } from './models/users/users.module';
       database: process.env.DB_NAME,
       entities: ['./**/*.entity.js'],
       synchronize: true,
+      ssl: {
+        rejectUnauthorized: false
+      }
     }),
   ],
   controllers: [AppController],
