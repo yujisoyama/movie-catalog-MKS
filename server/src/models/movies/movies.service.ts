@@ -106,20 +106,6 @@ export class MoviesService {
         return "As informações do filme foram atualizadas!";
     }
 
-    // async removeMovie(movieId: number): Promise<string | IMovieBadRequestError> {
-    //     const movie = await this.movieRepository.findOneBy({ id: movieId });
-
-    //     if (!movie) {
-    //         return {
-    //             message: "O filme não foi encontrado.",
-    //             property: "id"
-    //         }
-    //     }
-
-    //     await this.movieRepository.delete({ id: movieId });
-    //     return "O filme foi removido com sucesso.";
-    // }
-
     async getMovieById(movie: Partial<Movie>): Promise<Movie> {
         return await this.movieRepository.findOneBy({ id: movie.id });
     }
