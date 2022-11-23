@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpException, HttpStatus, Post, Res } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,6 +11,7 @@ export class UsersController {
     constructor(private userService: UsersService) { }
 
     @Post()
+    @ApiOperation({ summary: 'Rota para criar um usuário novo'})
     @ApiResponse({ status: 201, description: 'O usuário foi criado com sucesso!' })
     @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
     @HttpCode(201)

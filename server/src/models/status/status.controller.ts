@@ -1,6 +1,6 @@
 
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -15,6 +15,7 @@ export class StatusController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
+    @ApiOperation({ summary: 'Rota para adicionar tipos de relação usuário-filme na base de dados'})
     @ApiResponse({ status: 201, description: 'Relação adicionada com sucesso!' })
     @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
@@ -31,7 +32,8 @@ export class StatusController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    @ApiResponse({ status: 200, description: 'Retorna todos os tipos de relação uauário-filme disponíveis na base' })
+    @ApiOperation({ summary: 'Rota para obter todos os tipos de relação usuário-filme presentes na base'})
+    @ApiResponse({ status: 200, description: 'Retorna todos os tipos de relação usuário-filme disponíveis na base' })
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(200)
     async getAllStatus() {

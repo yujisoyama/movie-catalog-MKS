@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -17,6 +17,7 @@ export class MoviesController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
+    @ApiOperation({ summary: 'Rota para adicionar filmes na base de dados'})
     @ApiResponse({ status: 201, description: 'O filme foi adicionado com sucesso!' })
     @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
@@ -33,6 +34,7 @@ export class MoviesController {
 
     @UseGuards(JwtAuthGuard)
     @Post('/update')
+    @ApiOperation({ summary: 'Rota para atualizar dados de um filme presente na base de dados'})
     @ApiResponse({ status: 200, description: 'As informações do filme foram atualizadas!' })
     @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
@@ -49,6 +51,7 @@ export class MoviesController {
 
     @UseGuards(JwtAuthGuard)
     @Get('/:id')
+    @ApiOperation({ summary: 'Rota para retornar o filme de acordo com o seu id na base'})
     @ApiResponse({ status: 200, description: 'Retorna as informações do filme' })
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(200)
@@ -64,6 +67,7 @@ export class MoviesController {
 
     @UseGuards(JwtAuthGuard)
     @Post('/filter')
+    @ApiOperation({ summary: 'Rota para encontrar filmes presentes na base de acordo com filtros informados'})
     @ApiResponse({ status: 200, description: 'Retorna um array de objetos com as informações dos filmes que se encaixaram no filtro informado. Caso nenhum filtro seja informado no Body, retornará todos os filmes presentes na base' })
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(200)

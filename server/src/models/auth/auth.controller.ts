@@ -1,5 +1,5 @@
 import { Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 
@@ -10,6 +10,7 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post()
+    @ApiOperation({summary: 'Rota para login e geração de token de acesso do usuário'})
     @ApiResponse({ status: 201, description: 'access_token' })
     @ApiResponse({ status: 401, description: 'As credenciais são inválidas' })
     login(@Request() req: any) {
