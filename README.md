@@ -43,6 +43,6 @@
 - <strong>PostgreSQL (Experiente)</strong>: utilizando em toda a aplicação.
 - <strong>Docker (Intermediário)</strong>: aplicação totalmente dockerizada utilizando docker-compose e Dockerfile.
 - <strong>Swagger (Iniciante)</strong>: utilizado para realizar toda a documentação das API's desenvolvidas.
-- <strong>Redis (Iniciante)</strong>: utilizado para cache, otimizando as consultas no banco de dados.
+- <strong>Redis (Iniciante)</strong>: utilizado para cache, armazenando algumas informações na memória e acessando elas em vez de consultar no banco de dados.
 
 
