@@ -30,7 +30,7 @@
    http://localhost:3000/
    ```
 ## Live
-  O deploy dessa aplicação bem como a hospedagem do banco de dados PostgreSQL foi feita no Heroku. Sinta-se livre para usar cada endpoint e utilizar a [aplicação que está no ar](https://mks-desafio-backend.herokuapp.com/).
+  O deploy dessa aplicação bem como a hospedagem do banco de dados PostgreSQL foi feita no Heroku. Sinta-se livre para usar cada endpoint e utilizar a [aplicação que está no ar](https://mks-desafio-backend.herokuapp.com/). Pode ser que demore um pouco no primeiro acesso por conta do status StandBy da aplicação no Heroku.
    
 ## A arquitetura e design das tabelas no PostgreSQL foi feita da seguinte forma:
 <p align="center"><img src="https://user-images.githubusercontent.com/64661100/203474191-7dc33f98-ccf8-4e75-9646-03d98d501ef0.png" /></p>
