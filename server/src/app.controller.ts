@@ -10,9 +10,4 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get()
-  // getHello(@Request() req): string {
-  //   return req.user;
-  // }
 }

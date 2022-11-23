@@ -16,7 +16,6 @@ import { UserMovie } from './user-movie.entity';
 export class UsersMoviesService {
     constructor(
         @InjectRepository(UserMovie) private userMovieRepository: Repository<UserMovie>,
-        private userService: UsersService,
         private movieService: MoviesService,
         private statusService: StatusService,
     ) { }
@@ -36,6 +35,14 @@ export class UsersMoviesService {
                 return { message: "Informe uma nota válida (de 0 a 10)", property: "grade" }
             }
             createUserMovie.grade = Number(createUserMovie.grade).toFixed();
+        }
+
+        if (verifyStringIsEmpty(createUserMovie.grade)) {
+            createUserMovie.grade = "";
+        }
+
+        if (verifyStringIsEmpty(createUserMovie.comment)) {
+            createUserMovie.comment = "";
         }
 
         const reqMovie: Partial<Movie> = { id: Number(createUserMovie.movieId) }

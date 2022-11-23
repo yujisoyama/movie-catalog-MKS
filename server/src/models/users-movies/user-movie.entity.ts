@@ -23,6 +23,6 @@ export class UserMovie {
     @Column({ nullable: true })
     grade: string;
 
-    @Column()
+    @Column({ nullable: true })
     comment: string;
 }

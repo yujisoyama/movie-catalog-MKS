@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { responseForRequests } from 'src/utils/responseForRequests';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -8,12 +9,17 @@ import { UpdateMovieDto } from './dto/update-movie.dto';
 import { Movie } from './movie.entity';
 import { MoviesService } from './movies.service';
 
+@ApiBearerAuth()
+@ApiTags('movies')
 @Controller('movies')
 export class MoviesController {
     constructor(private movieService: MoviesService) { }
 
     @UseGuards(JwtAuthGuard)
     @Post()
+    @ApiResponse({ status: 201, description: 'O filme foi adicionado com sucesso!' })
+    @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
+    @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(201)
     async addMovie(@Body() createMovieDto: CreateMovieDto, @Res() res: Response) {
         try {
@@ -27,6 +33,9 @@ export class MoviesController {
 
     @UseGuards(JwtAuthGuard)
     @Post('/update')
+    @ApiResponse({ status: 200, description: 'As informações do filme foram atualizadas!' })
+    @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
+    @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(200)
     async updateMovie(@Body() updateMovieDto: UpdateMovieDto, @Res() res: Response) {
         try {
@@ -40,6 +49,8 @@ export class MoviesController {
 
     @UseGuards(JwtAuthGuard)
     @Get('/:id')
+    @ApiResponse({ status: 200, description: 'Retorna as informações do filme' })
+    @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(200)
     async getMovieById(@Param('id') movieId: number) {
         try {
@@ -53,6 +64,8 @@ export class MoviesController {
 
     @UseGuards(JwtAuthGuard)
     @Post('/filter')
+    @ApiResponse({ status: 200, description: 'Retorna um array de objetos com as informações dos filmes que se encaixaram no filtro informado. Caso nenhum filtro seja informado no Body, retornará todos os filmes presentes na base' })
+    @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(200)
     async getFilterMovies(@Body() filterMovie: FilterMoviesDto) {
         try {

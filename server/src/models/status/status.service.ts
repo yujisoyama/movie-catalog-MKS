@@ -30,7 +30,7 @@ export class StatusService {
 
         const newStatus = this.statusRepository.create(createStatus);
         await this.statusRepository.save(newStatus);
-        return "Status adicionado com sucesso!"
+        return "Relação adicionada com sucesso!"
     }
 
     async getAllStatus(): Promise<Status[]> {
