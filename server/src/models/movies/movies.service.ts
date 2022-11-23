@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getRedis, setRedis } from 'src/redisConfig';
 import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { Repository } from 'typeorm';
 import { IAddMovie, IFilterMovies, IMovieBadRequestError, IUpdateMovie } from './interfaces/movie.interface';
@@ -54,6 +55,8 @@ export class MoviesService {
 
         const newMovie = this.movieRepository.create({ ...createMovie });
         await this.movieRepository.save(newMovie);
+        await setRedis(`movie-${newMovie.id}`, JSON.stringify(newMovie));
+
         return "O filme foi adicionado com sucesso!";
     }
 
@@ -65,7 +68,8 @@ export class MoviesService {
             }
         }
 
-        const movie = await this.movieRepository.findOneBy({ id: updateMovie.id })
+        const movieRedis = await getRedis(`movie-${updateMovie.id}`);
+        const movie: Movie = JSON.parse(movieRedis);
 
         if (!movie) {
             return {
@@ -103,11 +107,13 @@ export class MoviesService {
         }
 
         await this.movieRepository.save(updatedMovie);
+        await setRedis(`movie-${updatedMovie.id}`, JSON.stringify(updatedMovie));
         return "As informações do filme foram atualizadas!";
     }
 
     async getMovieById(movie: Partial<Movie>): Promise<Movie> {
-        return await this.movieRepository.findOneBy({ id: movie.id });
+        const movieRedis = await getRedis(`movie-${movie.id}`);
+        return await JSON.parse(movieRedis);
     }
 
     async getMoviesByFilter(filterMovie: Partial<IFilterMovies>): Promise<Movie[]> {

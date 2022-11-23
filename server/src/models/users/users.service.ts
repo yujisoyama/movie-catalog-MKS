@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { verifyInvalidEmail } from 'src/utils/verifyInvalidEmail';
 import { verifyPasswordLength } from 'src/utils/verifyPasswordLength';
+import { getRedis, setRedis } from 'src/redisConfig';
 
 @Injectable()
 export class UsersService {
@@ -47,9 +48,10 @@ export class UsersService {
         }
 
         const hashedPassword = await bcrypt.hash(createUser.password, 10);
-
         const newUser = this.userRepository.create({ ...createUser, password: hashedPassword });
         await this.userRepository.save(newUser);
+        await setRedis(`user-${newUser.id}`, JSON.stringify(newUser));
+
         return "O usuário foi criado com sucesso!";
     }
 
@@ -58,6 +60,7 @@ export class UsersService {
     }
 
     async getUserById(user: Partial<User>): Promise<User> {
-        return await this.userRepository.findOneBy({ id: user.id });
+        const userRedis = await getRedis(`user-${user.id}`);
+        return await JSON.parse(userRedis);
     }
 }

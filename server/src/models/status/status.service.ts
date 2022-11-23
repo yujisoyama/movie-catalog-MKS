@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getRedis, setRedis } from 'src/redisConfig';
 import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { Repository } from 'typeorm';
 import { ICreateStatus } from './interfaces/status';
@@ -30,6 +31,7 @@ export class StatusService {
 
         const newStatus = this.statusRepository.create(createStatus);
         await this.statusRepository.save(newStatus);
+        await setRedis(`status-${newStatus.id}`, JSON.stringify(newStatus));
         return "Relação adicionada com sucesso!"
     }
 
@@ -38,7 +40,8 @@ export class StatusService {
     }
 
     async getStatusById(status: Partial<Status>): Promise<Status> {
-        return await this.statusRepository.findOneBy({ id: status.id });
+        const statusRedis = await getRedis(`status-${status.id}`);
+        return await JSON.parse(statusRedis);
     }
 
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getRedis, setRedis } from 'src/redisConfig';
 import { verifyNumberIsUndefinedOrNaN } from 'src/utils/verifyNumberIsUndefinedOrNaN';
 import { verifyStringIsEmpty } from 'src/utils/verifyStringIsEmpty';
 import { Repository } from 'typeorm';
@@ -16,8 +17,6 @@ import { UserMovie } from './user-movie.entity';
 export class UsersMoviesService {
     constructor(
         @InjectRepository(UserMovie) private userMovieRepository: Repository<UserMovie>,
-        private movieService: MoviesService,
-        private statusService: StatusService,
     ) { }
 
     async createUserMovie(createUserMovie: ICreateUserMovie, reqUser: Partial<User>) {
@@ -45,8 +44,8 @@ export class UsersMoviesService {
             createUserMovie.comment = "";
         }
 
-        const reqMovie: Partial<Movie> = { id: Number(createUserMovie.movieId) }
-        const movie = await this.movieService.getMovieById(reqMovie);
+        const movieRedis = await getRedis(`movie-${createUserMovie.movieId}`);
+        const movie: Movie = JSON.parse(movieRedis);
         if (!movie) {
             return { message: "O filme não foi encontrado.", property: "movieId" }
         }
@@ -61,8 +60,8 @@ export class UsersMoviesService {
             return { message: `Já existe uma relação do usuário '${reqUser.name}' com o filme '${movie.name}'. Caso queira editar as informações dessa relação, atualize ela em vez de cria outra.`, property: "movieId" }
         }
 
-        const reqStatus: Partial<Status> = { id: Number(createUserMovie.statusId) }
-        const status = await this.statusService.getStatusById(reqStatus);
+        const statusRedis = await getRedis(`status-${createUserMovie.statusId}`);
+        const status = await JSON.parse(statusRedis);
         if (!status) {
             return { message: "O status não foi encontrado.", property: "statusId" }
         }
@@ -75,10 +74,12 @@ export class UsersMoviesService {
             comment: createUserMovie.comment
         });
         await this.userMovieRepository.save(newUserMovie);
+        
+        await setRedis(`userMovie-${newUserMovie.id}`, JSON.stringify(newUserMovie));
         return `A relação do usuário '${reqUser.name}' com o filme '${movie.name}' foi adicionada. Status: '${status.description}'; Nota: '${newUserMovie.grade}'; Comentário: '${newUserMovie.comment}'`;
     }
 
-    async updateUserMovie(updateUserMovie: IUpdateUserMovie) {
+    async updateUserMovie(updateUserMovie: IUpdateUserMovie, reqUser: Partial<User>) {
         if (updateUserMovie.userMovieId === undefined) {
             return {
                 message: "Informe o ID da relação que deseja editar.",
@@ -86,16 +87,17 @@ export class UsersMoviesService {
             }
         }
 
-        const userMovie = await this.userMovieRepository.findOneBy({ id: updateUserMovie.userMovieId });
+        const userMovieRedis = await getRedis(`userMovie-${updateUserMovie.userMovieId}`);
+        const userMovie: UserMovie = await JSON.parse(userMovieRedis);
         if (!userMovie) {
             return {
                 message: "A relação não foi encontrada",
                 property: "userMovieId"
             }
         }
-
-
+        
         const updatedUserMovie = this.userMovieRepository.create(userMovie);
+        
         if (!verifyStringIsEmpty(updateUserMovie.comment)) {
             updatedUserMovie.comment = updateUserMovie.comment;
         }
@@ -108,8 +110,8 @@ export class UsersMoviesService {
         }
 
         if (!verifyNumberIsUndefinedOrNaN(updateUserMovie.statusId)) {
-            const reqStatus: Partial<Status> = { id: Number(updateUserMovie.statusId) }
-            const status = await this.statusService.getStatusById(reqStatus);
+            const statusRedis = await getRedis(`status-${updateUserMovie.statusId}`);
+            const status = await JSON.parse(statusRedis);
             if (!status) {
                 return { message: "O status não foi encontrado.", property: "statusId" }
             }
@@ -118,6 +120,7 @@ export class UsersMoviesService {
         }
 
         await this.userMovieRepository.save(updatedUserMovie);
+        await setRedis(`userMovie-${updatedUserMovie.id}`, JSON.stringify(updatedUserMovie));
         return `Sua relação com o filme foi atualizada. Status: '${updatedUserMovie.status.description}'; Nota: '${updatedUserMovie.grade}'; Comentário: '${updatedUserMovie.comment}'`;
     }
 
@@ -155,7 +158,8 @@ export class UsersMoviesService {
     }
 
     async removeUserMovie(userMovieId: number): Promise<string | IUserMovieBadRequestError> {
-        const userMovie = await this.userMovieRepository.findOneBy({ id: userMovieId });
+        const userMovieRedis = await getRedis(`userMovie-${userMovieId}`);
+        const userMovie: UserMovie = await JSON.parse(userMovieRedis);
 
         if (!userMovie) {
             return {

@@ -21,7 +21,7 @@ export class UsersMoviesController {
     @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
     @HttpCode(201)
-    async addUserMovie(@Body() createUserMovieDto: CreateUserMovieDto, @Request() req, @Res() res: Response) {
+    async addUserMovie(@Body() createUserMovieDto: CreateUserMovieDto, @Request() req: any, @Res() res: Response) {
         try {
             const result = await this.usersMoviesService.createUserMovie(createUserMovieDto, req.user);
             responseForRequests(result, res);
@@ -38,9 +38,9 @@ export class UsersMoviesController {
     @ApiResponse({ status: 400, description: 'Mensagem informando qual propriedade gerou o erro' })
     @HttpCode(201)
     @ApiResponse({ status: 401, description: 'Token informado para a requisição é inválido' })
-    async updateUserMovie(@Body() updateUserMovie: UpdateUserMovieDto, @Res() res: Response) {
+    async updateUserMovie(@Body() updateUserMovie: UpdateUserMovieDto, @Request() req: any,@Res() res: Response) {
         try {
-            const result = await this.usersMoviesService.updateUserMovie(updateUserMovie);
+            const result = await this.usersMoviesService.updateUserMovie(updateUserMovie, req);
             responseForRequests(result, res);
         } catch (error) {
             console.log(error);
