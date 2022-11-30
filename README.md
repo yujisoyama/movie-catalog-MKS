@@ -30,7 +30,7 @@
    http://localhost:3000/
    ```
 ## Live
-  O deploy dessa aplicação bem como a hospedagem do banco de dados PostgreSQL foi feita na AWS ec2. Sinta-se livre para usar cada endpoint e utilizar a [aplicação que está no ar](http://18.231.165.75:3000/).
+  O deploy dessa aplicação bem como a hospedagem do banco de dados PostgreSQL foi feita na AWS ec2. Sinta-se livre para usar cada endpoint e utilizar a [aplicação que está no ar](http://15.228.154.83:3000/).
    
 ## A arquitetura e design das tabelas no PostgreSQL foi feita da seguinte forma:
 <p align="center"><img src="https://user-images.githubusercontent.com/64661100/203474191-7dc33f98-ccf8-4e75-9646-03d98d501ef0.png" /></p>
