@@ -1,8 +1,15 @@
-# <p align="center"> MKS Desafio </p>
+# Movie Catalog MKS
 
-<p align="center">Aplicação backend, dockerizada, cujo objetivo é relacionar usuários e filmes através de um catálogo de filmes que é alimentado pelos próprios usuários.</p>
+Aplicação backend, dockerizada, cujo objetivo é relacionar usuários e filmes através de um catálogo de filmes que é alimentado pelos próprios usuários.
+Especificações do projeto: [MKS Backend Challenge](https://github.com/MKS-desenvolvimento-de-sistemas/mks-backend-challenge)
 
-<p align="center"><img src="https://user-images.githubusercontent.com/64661100/203472585-42218034-b984-43a5-b32e-a3ae866f1fa5.png" /></p>
+| :placard: Vitrine.Dev |     |
+| -------------  | --- |
+| :sparkles: Nome        | **Movie Catalog MKS**
+| :label: Tecnologias | NodeJS, NestJS, TypeORM, PostgreSQL, Swagger, Docker, Redis
+| :rocket: URL         | http://15.228.154.83:3000/
+
+![](https://user-images.githubusercontent.com/64661100/203472585-42218034-b984-43a5-b32e-a3ae866f1fa5.png#vitrinedev)
 
 ## ▶️ Rodando localmente
 ### Pré-requisitos:
